@@ -1,4 +1,3 @@
-// src/dashboard/ClientDashboard.jsx
 export default function ClientDashboard() {
-  return <h2>Welcome to Client Dashboard</h2>;
+  return <h1 style={{ color: "black" }}>✅ CLIENT DASHBOARD RENDERING</h1>;
 }

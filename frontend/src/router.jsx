@@ -1,5 +1,3 @@
-// src/router.jsx
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./auth/Login";
@@ -9,10 +7,6 @@ import AdminDashboard from "./dashboard/AdminDashboard";
 import ManagerDashboard from "./dashboard/ManagerDashboard";
 import EmployeeDashboard from "./dashboard/EmployeeDashboard";
 import ClientDashboard from "./dashboard/ClientDashboard";
-
-import TimesheetList from "./pages/TimesheetList";
-import TimesheetForm from "./pages/TimesheetForm";
-import EmployeeList from "./pages/EmployeeList";
 
 import CreateProject from "./modules/clients/CreateProject";
 import AssignProject from "./modules/clients/AssignProject";
@@ -24,39 +18,19 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RequireAuth from "./auth/RequireAuth";
 import DashboardLayout from "./layout/DashboardLayout";
-import { useAuth } from "./auth/AuthProvider";
 
 export default function Router() {
-  const { user, loading } = useAuth();
-
-  if (loading) return null;
-
-  const roleDashboard = {
-    admin: "/admin-dashboard",
-    manager: "/manager-dashboard",
-    employee: "/employee-dashboard",
-    client_admin: "/client-dashboard",
-  };
-
   return (
     <Routes>
-      {/* ================= PUBLIC ================= */}
+
+      {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* ================= ROOT ================= */}
-      <Route
-        path="/"
-        element={
-          user ? (
-            <Navigate to={roleDashboard[user.role]} replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+      {/* DEFAULT */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* ================= ADMIN / MANAGER / EMPLOYEE ================= */}
+      {/* ADMIN */}
       <Route
         path="/admin-dashboard"
         element={
@@ -66,6 +40,7 @@ export default function Router() {
         }
       />
 
+      {/* MANAGER */}
       <Route
         path="/manager-dashboard"
         element={
@@ -75,6 +50,7 @@ export default function Router() {
         }
       />
 
+      {/* EMPLOYEE */}
       <Route
         path="/employee-dashboard"
         element={
@@ -84,24 +60,20 @@ export default function Router() {
         }
       />
 
-      {/* ================= CLIENT (LAYOUT BASED) ================= */}
-      <Route
-        element={
-          <RequireAuth>
-            <DashboardLayout />
-          </RequireAuth>
-        }
-      >
-        <Route path="/client-dashboard" element={<ClientDashboard />} />
-        <Route path="/create-project" element={<CreateProject />} />
-        <Route path="/assign-project" element={<AssignProject />} />
-        <Route path="/project-list" element={<ProjectList />} />
-        <Route path="/reports" element={<ClientReports />} />
-      </Route>
+      {/* CLIENT (LAYOUT BASED) */}
+    <Route element={<DashboardLayout />}>
+  <Route path="/client-dashboard" element={<ClientDashboard />} />
+  <Route path="/create-project" element={<CreateProject />} />
+  <Route path="/assign-project" element={<AssignProject />} />
+  <Route path="/project-list" element={<ProjectList />} />
+  <Route path="/reports" element={<ClientReports />} />
+</Route>
 
-      {/* ================= 404 ================= */}
+
+      {/* 404 */}
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
+
     </Routes>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
 import "../styles/login.css";
 
@@ -7,6 +8,15 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const roleRedirectMap = {
+    admin: "/admin-dashboard",
+    manager: "/manager-dashboard",
+    employee: "/employee-dashboard",
+    client_admin: "/client-dashboard",
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,25 +30,23 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // 1️⃣ Login
+      // Login
       const data = await authApi.login(employeeId, password);
-
-      // 2️⃣ Save JWT
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
 
-      // 3️⃣ Get user profile (role)
+      // Profile
       const profile = await authApi.profile();
       localStorage.setItem("role", profile.role);
 
-      // 4️⃣ Redirect to OTHER APP
-      if (profile.role === "client") {
-        window.location.href = "http://localhost:5174/";
-      } else if (profile.role === "admin") {
-        window.location.href = "/admin";
-      } else {
-        setError("Unknown role");
+      const redirectPath = roleRedirectMap[profile.role];
+
+      if (!redirectPath) {
+        setError(`Unknown role: ${profile.role}`);
+        return;
       }
+
+      navigate(redirectPath, { replace: true });
 
     } catch (err) {
       setError("Invalid Employee ID or Password");

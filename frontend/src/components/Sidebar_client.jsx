@@ -1,15 +1,30 @@
-export default function Sidebar() {
+import { NavLink } from "react-router-dom";
+import "./Sidebar_client.css";
+
+export default function SidebarClient() {
   return (
-    <div
-      style={{
-        width: "230px",
-        height: "100vh",
-        background: "#0f172a",
-        color: "white",
-        padding: "20px"
-      }}
-    >
-      <h2>Client Dashboard</h2>
-    </div>
+    <aside className="sidebar">
+      <nav className="sidebar-nav">
+        <NavLink to="/client-dashboard" className="nav-item">
+          Dashboard
+        </NavLink>
+
+        <NavLink to="/assign-project" className="nav-item">
+          Assign Project
+        </NavLink>
+
+        <NavLink to="/create-project" className="nav-item">
+          Create Project
+        </NavLink>
+
+        <NavLink to="/project-list" className="nav-item">
+          Project List
+        </NavLink>
+
+        <NavLink to="/reports" className="nav-item">
+          Reports
+        </NavLink>
+      </nav>
+    </aside>
   );
 }
