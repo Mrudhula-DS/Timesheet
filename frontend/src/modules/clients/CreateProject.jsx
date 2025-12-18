@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { createProject } from "../../api/projectApi";
+import { useOutletContext } from "react-router-dom";
 import "./CreateProject.css";
 
-export default function CreateProject({ projects, setProjects }) {
+export default function CreateProject({ setProjects: propSetProjects }) {
+  const outlet = useOutletContext();
+  const setProjects = propSetProjects || outlet?.setProjects || (() => {});
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -11,33 +15,39 @@ export default function CreateProject({ projects, setProjects }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
-      const newProject = {
-        id: Date.now(),
+      const response = await createProject({
         title,
         description,
         status,
-        assignedTo: "Unassigned",
-        deadline: dueDate,
-      };
+        deadline: dueDate || null,
+      });
 
-      setProjects((prev) => [...prev, newProject]);
+      // `createProject` returns the created object (res.data)
+      setProjects((prev) => [...prev, response]);
 
+      // Reset form
       setTitle("");
       setDescription("");
       setDueDate("");
       setStatus("Not Started");
 
-      setSuccess("Project created successfully!");
-      setTimeout(() => setSuccess(null), 3000);
+      // Show success message
+      setSuccess("Project created successfully");
+      setTimeout(() => setSuccess(null), 3000); // clear after 3 seconds
     } catch (err) {
-      setError("Failed to create project.");
+        console.error("Create project error:", err);
+        setError(
+          err.response?.data?.detail ||
+          err.response?.data ||
+          err.message ||
+          "Failed to create project"
+        );
     } finally {
       setLoading(false);
     }
@@ -47,31 +57,36 @@ export default function CreateProject({ projects, setProjects }) {
     <div className="create-project card p-4">
       <h2>Create Project</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title</label><br />
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
-        </div>
-        <div>
-          <label>Description</label><br />
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
-        <div>
-          <label>Due date</label><br />
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-        </div>
-        <div>
-          <label>Status</label><br />
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="Not Started">Not Started</option>
-            <option value="Ongoing">Ongoing</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
+        <input
+          type="text"
+          placeholder="Project Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
 
-        {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-        {success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
+        <textarea
+          placeholder="Project Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <button type="submit" disabled={loading} style={{ marginTop: "10px" }}>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+        />
+
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="Not Started">Not Started</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Completed">Completed</option>
+        </select>
+
+        {error && <p style={{ color: "red" }}>{JSON.stringify(error)}</p>}
+        {success && <p style={{ color: "green" }}>{success}</p>}
+
+        <button type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Project"}
         </button>
       </form>

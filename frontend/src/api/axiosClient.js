@@ -1,13 +1,9 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: "http://127.0.0.1:8000/api/",
 });
 
-// 🔑 Attach access token automatically
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("access");
   if (token) {
@@ -15,46 +11,5 @@ axiosClient.interceptors.request.use((config) => {
   }
   return config;
 });
-
-// 🔄 Auto refresh expired token
-axiosClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      localStorage.getItem("refresh")
-    ) {
-      originalRequest._retry = true;
-
-      try {
-        const res = await axios.post(
-          "http://127.0.0.1:8000/api/accounts/token/refresh/",
-          {
-            refresh: localStorage.getItem("refresh"),
-          }
-        );
-
-        localStorage.setItem("access", res.data.access);
-
-        originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
-
-        return axiosClient(originalRequest);
-      } catch (err) {
-        console.warn("Refresh token expired → logout");
-
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("role");
-
-        window.location.href = "/login";
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
 
 export default axiosClient;

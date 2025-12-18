@@ -1,14 +1,48 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import authApi from "../api/authApi";
 
-export const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [auth, setAuth] = useState(null);
 
-  const value = { user, setUser, loading, setLoading };
+  useEffect(() => {
+    const access = localStorage.getItem("access");
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    if (access && role) {
+      setAuth({ access, role, username });
+    }
+  }, []);
+
+  const login = async (username, password) => {
+    const data = await authApi.login(username, password);
+
+    localStorage.setItem("access", data.access);
+    localStorage.setItem("refresh", data.refresh);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("username", data.username);
+
+    setAuth({
+      access: data.access,
+      role: data.role,
+      username: data.username,
+    });
+
+    return data;
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    setAuth(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ auth, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

@@ -1,132 +1,90 @@
-/* Reset (optional but recommended) */
-* {
-  box-sizing: border-box;
-}
-
-/* Container */
 .project-list {
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 25px 40px;
-  background: #ffffff;
-  font-family: system-ui, sans-serif;
-  color: #1e293b;
+  padding: 20px;
+  box-sizing: border-box;
+  width: calc(100% - 240px);
+  background-color: #f8fafc;          /* softer neutral */
 }
 
-/* Heading */
+/* Title */
 .project-list h2 {
-  font-size: 22px;
+  margin-bottom: 12px;
+  font-size: 18px;
   font-weight: 600;
-  margin-bottom: 20px;
-  text-align: center;
+  color: #1f2937;
 }
 
-/* Filter Section */
+/* Filter section */
 .project-list label {
+  margin-right: 6px;
   font-size: 14px;
   font-weight: 500;
-  margin-right: 8px;
-  color: #475569;
+  color: #374151;
 }
 
 .project-list select {
-  padding: 8px 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background: #f8fafc;
+  padding: 5px 8px;
   font-size: 14px;
-  color: #1e293b;
-  margin-right: 10px;
-  transition: border 0.2s;
+  border: 1px solid #9ca3af;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #111827;
+  outline: none;
 }
 
 .project-list select:focus {
-  outline: none;
-  border-color: #6366f1;
-}
-
-/* Refresh Button */
-.project-list button {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.project-list button:hover {
-  background: #4338ca;
-}
-
-.project-list button:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
+  border-color: #2563eb;
 }
 
 /* Table */
 .project-list table {
   width: 100%;
-  margin-top: 15px;
   border-collapse: collapse;
-  font-size: 14px;
+  margin-top: 12px;
+  background-color: #ffffff;
 }
 
+/* Table cells */
 .project-list th,
 .project-list td {
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-  text-align: left;
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  font-size: 14px;
+  color: #111827;
 }
 
 .project-list th {
-  background: #f1f5f9;
+  background-color: #e5e7eb;
   font-weight: 600;
-  color: #334155;
+  text-align: center;
 }
 
-.project-list tr:hover {
-  background: #f8fafc;
-  transition: background 0.2s;
+.project-list td {
+  text-align: center;
 }
 
-/* Responsive Table */
-@media (max-width: 600px) {
-  .project-list table,
-  .project-list thead,
-  .project-list tbody,
-  .project-list th,
-  .project-list td,
-  .project-list tr {
-    display: block;
+/* First column */
+.project-list td:first-child,
+.project-list th:first-child {
+  text-align: left;
+}
+
+/* Row hover */
+.project-list tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Empty state */
+.project-list td[colspan] {
+  padding: 14px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* Mobile safety */
+@media (max-width: 768px) {
+  .project-list {
+    margin-left: 0;
     width: 100%;
-  }
-
-  .project-list tr {
-    margin-bottom: 15px;
-    border-bottom: 2px solid #e2e8f0;
-  }
-
-  .project-list thead {
-    display: none;
-  }
-
-  .project-list td {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
-  }
-
-  .project-list td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    font-weight: 600;
-    text-align: left;
-    color: #334155;
+    padding: 15px;
   }
 }

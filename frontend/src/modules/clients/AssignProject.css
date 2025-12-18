@@ -1,88 +1,75 @@
+/* AssignProject.css */
+
 .assign-project {
-  width: 100%;
-  height: 100%;
-  margin: 0;
+  max-width: 500px;
+  margin: 30px auto;
   padding: 25px;
-  border-radius: 0;
-  box-shadow: none;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
-/* Heading */
 .assign-project h2 {
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #1e293b;
   text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-/* Form */
-.assign-project form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  flex: 1; /* allows form to expand full height */
+.assign-project form > div {
+  margin-bottom: 15px;
 }
 
-/* Labels */
 .assign-project label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
+  font-weight: 600;
+  color: #555;
+  display: block;
+  margin-bottom: 5px;
 }
 
-/* Inputs */
 .assign-project select,
 .assign-project textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  background: #f8fafc;
   font-size: 14px;
-  color: #1e293b;
-  transition: border 0.2s;
+  font-family: inherit;
+  box-sizing: border-box;
 }
 
 .assign-project select:focus,
 .assign-project textarea:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0,123,255,0.5);
 }
 
-/* Textarea */
 .assign-project textarea {
-  height: 120px;
   resize: vertical;
-  flex-shrink: 0;
+  min-height: 70px;
 }
 
-/* Error Message */
-.assign-project .error {
-  color: #dc2626;
-  font-size: 14px;
-  margin-top: -10px;
-}
-
-/* Button */
 .assign-project button {
-  background: #4f46e5;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
   color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 6px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .assign-project button:hover {
-  background: #4338ca;
+  background-color: #0056b3;
 }
 
-.assign-project button:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
+.assign-project div[style*="color: red"] {
+  font-size: 14px;
+  margin-top: -5px;
+  margin-bottom: 10px;
 }

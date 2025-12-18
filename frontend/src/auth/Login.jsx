@@ -1,70 +1,48 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authApi from "../api/authApi";
+import { useAuth } from "./AuthProvider";
 import "../styles/login.css";
 
 export default function Login() {
-  const [employeeId, setEmployeeId] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-
-  const roleRedirectMap = {
-    admin: "/admin-dashboard",
-    manager: "/manager-dashboard",
-    employee: "/employee-dashboard",
-    client_admin: "/client-dashboard",
-  };
-
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
     setError("");
 
-    if (!employeeId || !password) {
-      setError("Employee ID and Password are required");
-      return;
-    }
-
     try {
-      setLoading(true);
+      const data = await login(username, password);
 
-      // Login
-      const data = await authApi.login(employeeId, password);
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
+      if (data.role === "admin") navigate("/admin-dashboard");
+      else if (data.role === "manager") navigate("/manager-dashboard");
+      else if (data.role === "employee") navigate("/employee-dashboard");
+      else navigate("/client-dashboard");
 
-      // Profile
-      const profile = await authApi.profile();
-      localStorage.setItem("role", profile.role);
-
-      const redirectPath = roleRedirectMap[profile.role];
-
-      if (!redirectPath) {
-        setError(`Unknown role: ${profile.role}`);
-        return;
-      }
-
-      navigate(redirectPath, { replace: true });
-
-    } catch (err) {
-      setError("Invalid Employee ID or Password");
+    } catch {
+      setError("Invalid username or password");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="login-bg">
       <div className="login-card">
-        <h2>Timesheet Login</h2>
+        <h2>Login</h2>
 
         <form onSubmit={handleSubmit}>
           <input
-            placeholder="Employee ID"
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
           />
 
           <input
@@ -72,6 +50,7 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
 
           <button type="submit" disabled={loading}>

@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import sampleManagers from "../../Sample-managers";
 import "./AssignProject.css";
 
-export default function AssignProject({ projects, setProjects, onAssigned }) {
+export default function AssignProject({ onAssigned, projects: propProjects, setProjects: propSetProjects }) {
+  const outlet = useOutletContext();
+  const projects = propProjects ?? outlet?.projects ?? [];
+  const setProjects = propSetProjects ?? outlet?.setProjects ?? (() => {});
   const [assignableProjects, setAssignableProjects] = useState([]);
   const [managers, setManagers] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedManager, setSelectedManager] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null); // new state for success message
+
+  // Initialize managers and compute assignable projects from shared `projects`
+  useEffect(() => {
+    setManagers(sampleManagers);
+  }, []);
 
   useEffect(() => {
-    // Show only projects that are not completed
-    const filtered = projects.filter(p => p.status !== "Completed");
+    const filtered = (projects || []).filter((p) => p.status !== "Completed");
     setAssignableProjects(filtered);
-
-    setManagers(sampleManagers);
   }, [projects]);
 
   function handleAssign(e) {
@@ -40,22 +47,24 @@ export default function AssignProject({ projects, setProjects, onAssigned }) {
       notes
     };
 
+    // Callback to parent
     onAssigned && onAssigned(result);
 
-    // Optionally mark the project as assigned (remove from dropdown)
-    setAssignableProjects(prev =>
-      prev.filter(p => p.id !== Number(selectedProject))
-    );
-
-    // Optionally update the main projects list to reflect assignment
-    setProjects(prev =>
-      prev.map(p =>
-        p.id === Number(selectedProject)
-          ? { ...p, assignedTo: assignedManager.username }
-          : p
+    // Update global projects list
+    setProjects((prev) =>
+      (prev || []).map((p) =>
+        p.id === Number(selectedProject) ? { ...p, assignedTo: assignedManager.username } : p
       )
     );
 
+    // Remove assigned project from local dropdown list
+    setAssignableProjects((prev) => prev.filter((p) => p.id !== Number(selectedProject)));
+
+    // Show success message
+    setSuccess(`Project "${assignedProject.title}" assigned to ${assignedManager.username}!`);
+    setTimeout(() => setSuccess(null), 3000); // remove message after 3 seconds
+
+    // Reset form
     setSelectedProject("");
     setSelectedManager("");
     setNotes("");
@@ -109,9 +118,11 @@ export default function AssignProject({ projects, setProjects, onAssigned }) {
           />
         </div>
 
-        {error && <div style={{ color: "red" }}>{error}</div>}
+        {/* Error and Success Messages */}
+        {error && <div style={{ color: "red", marginTop: "8px" }}>{error}</div>}
+        {success && <div style={{ color: "green", marginTop: "8px" }}>{success}</div>}
 
-        <button type="submit">Assign</button>
+        <button type="submit" style={{ marginTop: "10px" }}>Assign</button>
       </form>
     </div>
   );

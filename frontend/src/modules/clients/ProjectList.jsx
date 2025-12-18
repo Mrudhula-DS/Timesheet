@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import "./ProjectList.css";
 
-export default function ProjectList({ projects }) {
+export default function ProjectList({ projects: propProjects }) {
+  const outlet = useOutletContext();
+  const projects = propProjects ?? outlet?.projects ?? [];
+
   const [status, setStatus] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
 
   useEffect(() => {
+    const src = projects || [];
     if (status === "") {
-      setFilteredProjects(projects);
+      setFilteredProjects(src);
     } else {
-      setFilteredProjects(projects.filter((p) => p.status === status));
+      setFilteredProjects(src.filter((p) => p.status === status));
     }
   }, [status, projects]);
 

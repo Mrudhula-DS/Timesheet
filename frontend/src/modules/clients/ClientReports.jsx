@@ -1,11 +1,15 @@
 // src/components/ClientReports.jsx
 import React, { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 // import { fetchProjects, fetchReports, createReport } from "../api/api"; // comment out API for testing
 import sampleProjects from "../../Sample-projects";
  // import the sample projects
 import "./ClientReports.css";
 
 export default function ClientReports() {
+  const outlet = useOutletContext();
+  const outletProjects = outlet?.projects ?? [];
+
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [reports, setReports] = useState([]);
@@ -13,16 +17,13 @@ export default function ClientReports() {
   const [newContent, setNewContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(()=> { loadProjects(); }, []);
-
-  async function loadProjects() {
-    // For testing with sample data:
-    setProjects(sampleProjects);
-
-    // For real API:
-    // const pr = await fetchProjects();
-    // setProjects(pr);
-  }
+  useEffect(() => {
+    // Merge sample projects and any projects created in the app (outletProjects)
+    const map = new Map();
+    sampleProjects.forEach((p) => map.set(p.id, p));
+    (outletProjects || []).forEach((p) => map.set(p.id, p));
+    setProjects(Array.from(map.values()));
+  }, [outletProjects]);
 
   async function loadReportsForProject(projectId) {
     setLoading(true);
